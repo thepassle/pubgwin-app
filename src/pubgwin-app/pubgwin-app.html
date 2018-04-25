@@ -1,0 +1,45 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="pubgwin-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello {{playerName}} welcome to pubgwin</h2>
+    <paper-input label="ENTER PLAYERNAME" value="{{playerName}}"></paper-input>
+    <paper-button raised on-click="go">GET WIN</paper-button>
+
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PubgwinApp extends Polymer.Element {
+      static get is() { return 'pubgwin-app'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'pubgwin-app'
+          },
+          playerName: {
+            type: String
+          }
+
+        };
+      }
+
+      go(){
+        location.href = '/demo/'+this.playerName;
+      }
+    }
+
+    window.customElements.define(PubgwinApp.is, PubgwinApp);
+  </script>
+</dom-module>

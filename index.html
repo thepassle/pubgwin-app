@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>pubgwin</title>
+    <meta name="description" content="pubgwin description">
+
+    <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="import" href="/bower_components/app-router/app-router.html">
+
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="/src/pubgwin-app/pubgwin-app.html">
+    <link rel="import" href="/src/pubgwin-app/pubgwin-app2.html">
+
+  </head>
+  <body>
+      <app-router>
+      <app-route path="/" import="/src/pubgwin-app/pubgwin-app.html"></app-route>
+      <app-route path="/demo/:pathArg1" import="/src/pubgwin-app/pubgwin-app2.html"></app-route>
+      <app-route path="/notes" import="/pages/notes-page.html"></app-route>
+      <app-route path="*" import="/pages/not-found-page.html"></app-route>
+    </app-router>
+  </body>
+</html>

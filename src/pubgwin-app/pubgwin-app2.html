@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+
+<dom-module id="pubgwin-app2">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]] 2!</h2>
+    <h1>{{pathArg1}}</h1>
+    
+    <template is="dom-if" if=[[!loading]]>
+      <h1>[[res]]</h1>
+    </template>
+
+    <template is="dom-if" if=[[loading]]>
+      <paper-spinner active></paper-spinner>
+    </template>
+  </template>
+
+  <script>
+    /**
+     * @customElement
+     * @polymer
+     */
+    class PubgwinApp2 extends Polymer.Element {
+      static get is() { return 'pubgwin-app2'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'pubgwin-app2'
+          },
+          res: {
+            type: String
+          },
+          loading: {
+            type: Boolean,
+            value: true
+          }
+        };
+      }
+
+      ready() {
+        super.ready();
+        fetch('https://swapi.co/api/people/2/')
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(myJson) {
+            console.log(myJson.name);
+            this.res = myJson.name;
+            this.loading = false;
+          }.bind(this));
+      };
+
+    }
+
+    window.customElements.define(PubgwinApp2.is, PubgwinApp2);
+  </script>
+</dom-module>
