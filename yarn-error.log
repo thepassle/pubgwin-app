@@ -1,0 +1,42 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn dev
+
+PATH: 
+  /Library/Frameworks/Python.framework/Versions/3.6/bin:/opt/local/bin:/opt/local/sbin:/Library/Frameworks/Python.framework/Versions/2.7/bin:/Library/Frameworks/Python.framework/Versions/3.4/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/Pascalschilp/Documents/WebDriver:/opt/X11/bin:/Users/Pascalschilp/Downloads/apache-maven-3.5.2/bin
+
+Yarn version: 
+  0.27.5
+
+Node version: 
+  8.6.0
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "pubgwin-app",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/thepassle/pubgwin-app.git",
+    "author": "Pascal schilp mac <pschilp@sogyo.nl>",
+    "license": "MIT",
+    "scripts": {
+      "dev": "polymer serve",
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  SyntaxError: /Users/Pascalschilp/Desktop/pubgwin-app/package.json: Unexpected token } in JSON at position 252
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/0.27.5/libexec/lib/yarn-cli.js:747:57
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/0.27.5/libexec/lib/yarn-cli.js:91:30)
+      at /usr/local/Cellar/yarn/0.27.5/libexec/lib/yarn-cli.js:102:13
+      at <anonymous>
