@@ -30,6 +30,8 @@
      */
     // var axios = Axios.axios;
 
+
+
     class PubgwinApp2 extends Polymer.Element {
       static get is() { return 'pubgwin-app2'; }
       static get properties() {
@@ -51,9 +53,22 @@
       ready() {
         super.ready();
         
-        axios.get('https://swapi.co/api/people/2/').then((res)=>{
-          console.log(res);
-          this.res = res.data.name;
+        const headers = {
+          headers: {
+            'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkMWZlODUxMC0xOGQ1LTAxMzYtYjdkMC0wNjk4NDNiNWIwOTUiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTIyNjk1NTM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InBhc3NsZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.pcsr57XH1SJqS2ZwCjq-q9pon_D9mkkUqaGq6UWE-88",
+            'Accept': 'application/vnd.api+json',
+            'Content-Type': 'application/json'
+          } 
+        }
+
+        // axios.get('https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=passle', headers).then( (res) => { 
+        //   console.log(res.data)
+        // });
+
+        axios.get("https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=passle", headers).then( (res) => { 
+          console.log(res.data.data);
+
+          this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
           this.loading = false;
         });
 
