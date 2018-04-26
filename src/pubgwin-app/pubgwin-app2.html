@@ -12,25 +12,29 @@
       }
     </style>
     <h2>Hello [[prop1]] 2!</h2>
-    <h1>{{pathArg1}}</h1>
+    <h3>player name(route): {{pathArg1}}</h3>
     
     <template is="dom-if" if=[[!loading]]>
-      <h1>[[res]]</h1>
+      <h3>api player res: [[res]]</h3>
     </template>
 
     <template is="dom-if" if=[[loading]]>
       <paper-spinner active></paper-spinner>
     </template>
+
+
+    <template is="dom-if" if=[[!loadingRank]]>
+      <h3>api last game rank: [[lastRank]]</h3>
+    </template>
+
+    <template is="dom-if" if=[[loadingRank]]>
+      <paper-spinner active></paper-spinner>
+    </template>
+
+
   </template>
 
   <script>
-    /**
-     * @customElement
-     * @polymer
-     */
-    // var axios = Axios.axios;
-
-
 
     class PubgwinApp2 extends Polymer.Element {
       static get is() { return 'pubgwin-app2'; }
@@ -44,6 +48,10 @@
             type: String
           },
           loading: {
+            type: Boolean,
+            value: true
+          },
+          loadingRank: {
             type: Boolean,
             value: true
           }
@@ -61,15 +69,21 @@
           } 
         }
 
-        // axios.get('https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=passle', headers).then( (res) => { 
-        //   console.log(res.data)
-        // });
-
-        axios.get("https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=passle", headers).then( (res) => { 
-          console.log(res.data.data);
+        axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.pathArg1}`, headers).then( (res) => { 
+          console.log(res.data);
 
           this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
           this.loading = false;
+
+          axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${res.data.data[0].relationships.matches.data[0].id}`, headers).then( (res)=>{
+            let player = res.data.included.filter((item)=>{
+              return item.type === 'participant' && item.attributes.stats.name === this.pathArg1;
+            })[0];
+
+            this.lastRank = player.attributes.stats.winPlace;
+            this.loadingRank = false;
+            console.log(player);
+          });
         });
 
       };
