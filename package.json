@@ -7,5 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "polymer serve --open"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
   }
 }

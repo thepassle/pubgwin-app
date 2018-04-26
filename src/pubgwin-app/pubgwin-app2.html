@@ -1,6 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
+<script src="../../node_modules/axios/dist/axios.min.js"></script>
+
+
 <dom-module id="pubgwin-app2">
   <template>
     <style>
@@ -25,6 +28,8 @@
      * @customElement
      * @polymer
      */
+    // var axios = Axios.axios;
+
     class PubgwinApp2 extends Polymer.Element {
       static get is() { return 'pubgwin-app2'; }
       static get properties() {
@@ -45,15 +50,13 @@
 
       ready() {
         super.ready();
-        fetch('https://swapi.co/api/people/2/')
-          .then(function(response) {
-            return response.json();
-          })
-          .then(function(myJson) {
-            console.log(myJson.name);
-            this.res = myJson.name;
-            this.loading = false;
-          }.bind(this));
+        
+        axios.get('https://swapi.co/api/people/2/').then((res)=>{
+          console.log(res);
+          this.res = res.data.name;
+          this.loading = false;
+        });
+
       };
 
     }
