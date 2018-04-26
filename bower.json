@@ -2,7 +2,11 @@
   "name": "pubgwin",
   "main": "index.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "paper-button": "^2.1.0",
+    "app-router": "^2.7.2",
+    "paper-spinner": "^2.1.0",
+    "paper-input": "^2.2.2"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
