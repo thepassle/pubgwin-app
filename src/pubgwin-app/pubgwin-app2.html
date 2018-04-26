@@ -23,7 +23,7 @@
 
 
     <template is="dom-if" if=[[!loadingRank]]>
-      <h3>api last game rank: [[lastRank]]</h3>
+      <h3>Amount of wins: [[wins]]</h3>
     </template>
 
     <template is="dom-if" if=[[loadingRank]]>
@@ -55,8 +55,9 @@
             type: String,
             value: ""
           },
-          lastRank: {
-            type: String
+          wins: {
+            type: Number,
+            value: 0
           }
         };
       }
@@ -92,14 +93,15 @@
             this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
             this.loading = false;
 
-            axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res)=>{
+            axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res) => {
               console.log(res);
               let player = res.data.included.filter((item)=>{
                 return item.type === 'participant' && item.attributes.stats.name === this.playerName;
               })[0];
 
-              this.lastRank = player.attributes.stats.winPlace;
-              if(this.lastRank === 1){
+              let lastRank = player.attributes.stats.winPlace;
+              if(lastRank === 1){
+                this.wins += 1;
                 console.log("Win! :)");
               } else {
                 console.log("No win :(");
