@@ -24,19 +24,14 @@
       static get is() { return 'pubgwin-app'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'pubgwin-app'
-          },
           playerName: {
             type: String
           }
-
         };
       }
 
       go(){
-        location.href = '/demo/'+this.playerName;
+        location.href = '/'+this.playerName;
       }
     }
 

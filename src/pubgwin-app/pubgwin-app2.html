@@ -11,11 +11,10 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]] 2!</h2>
-    <h3>player name(route): {{pathArg1}}</h3>
+    <h3>player name(route): {{playerName}}</h3>
     
     <template is="dom-if" if=[[!loading]]>
-      <h3>api player res: [[res]]</h3>
+      <h3>api player response: [[res]]</h3>
     </template>
 
     <template is="dom-if" if=[[loading]]>
@@ -40,13 +39,10 @@
       static get is() { return 'pubgwin-app2'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'pubgwin-app2'
-          },
           res: {
             type: String
           },
+
           loading: {
             type: Boolean,
             value: true
@@ -54,13 +50,29 @@
           loadingRank: {
             type: Boolean,
             value: true
+          },
+          oldMatchId: {
+            type: String,
+            value: ""
+          },
+          lastRank: {
+            type: String
           }
         };
       }
 
       ready() {
         super.ready();
-        
+          
+        this.getData();
+
+        setInterval(() => {
+          this.getData();
+        }, 60000);
+      
+      };
+
+      getData(){
         const headers = {
           headers: {
             'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkMWZlODUxMC0xOGQ1LTAxMzYtYjdkMC0wNjk4NDNiNWIwOTUiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTIyNjk1NTM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InBhc3NsZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.pcsr57XH1SJqS2ZwCjq-q9pon_D9mkkUqaGq6UWE-88",
@@ -68,25 +80,39 @@
             'Content-Type': 'application/json'
           } 
         }
+        
+        axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
+          let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
+          
+          console.log(res);
 
-        axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.pathArg1}`, headers).then( (res) => { 
-          console.log(res.data);
+          if(newestMatchId !== this.oldMatchId){
+            this.oldMatchId = newestMatchId;
+          
+            this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
+            this.loading = false;
 
-          this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
-          this.loading = false;
+            axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res)=>{
+              console.log(res);
+              let player = res.data.included.filter((item)=>{
+                return item.type === 'participant' && item.attributes.stats.name === this.playerName;
+              })[0];
 
-          axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${res.data.data[0].relationships.matches.data[0].id}`, headers).then( (res)=>{
-            let player = res.data.included.filter((item)=>{
-              return item.type === 'participant' && item.attributes.stats.name === this.pathArg1;
-            })[0];
+              this.lastRank = player.attributes.stats.winPlace;
+              if(this.lastRank === 1){
+                console.log("Win! :)");
+              } else {
+                console.log("No win :(");
+              }
 
-            this.lastRank = player.attributes.stats.winPlace;
-            this.loadingRank = false;
-            console.log(player);
-          });
+              this.loadingRank = false;
+              console.log(player);
+            });
+          } else {
+            console.log("No new matches");
+          }
         });
-
-      };
+      }
 
     }
 

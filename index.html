@@ -20,8 +20,7 @@
   <body>
       <app-router>
       <app-route path="/" import="/src/pubgwin-app/pubgwin-app.html"></app-route>
-      <app-route path="/demo/:pathArg1" import="/src/pubgwin-app/pubgwin-app2.html"></app-route>
-      <app-route path="/notes" import="/pages/notes-page.html"></app-route>
+      <app-route path="/:playerName" import="/src/pubgwin-app/pubgwin-app2.html"></app-route>
       <app-route path="*" import="/pages/not-found-page.html"></app-route>
     </app-router>
   </body>
