@@ -1,6 +1,5 @@
 <link rel="import" href="../../bower_components/web-animations-js/web-animations-next.min.html">
 
-
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -9,37 +8,205 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 
 
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
 
 <dom-module id="pubgwin-app">
+
   <template>
+
     <style>
     :host {
-      display: block;
+      --big-height: 40px;
+      --small-height: 10px;
+      font-family: 'Roboto';
+      font-weight: bold;
     }
+
+    a {
+      text-decoration: none;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    .toolbar {
+      @apply --layout-horizontal;
+      @apply --layout-end-justified;
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .tabs {
+      height: 100%;
+      @apply --layout-horizontal;
+    }
+
+    .tabs > a {
+      @apply --layout-vertical;
+      @apply --layout-center-center;
+      margin: 12px 16px 12px;
+      border-bottom: 1px solid #222;
+    }
+
+    header {
+      @apply --layout-vertical;
+      @apply --layout-center-center;
+      height: calc(100vh);
+      padding: 0 16px;
+      background-image: url('https://d1wfiv6sf8d64f.cloudfront.net/static/pc/img/backgroundart.jpg');
+      background-repeat: no-repeat;
+      background-size: cover;
+      color: white;
+      text-align: center;
+    }
+
+    header > h2 {
+      color: #f1bc38;
+      font-size: 56px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    header > p {
+      font-size: 24px;
+    }
+
+    section {
+      padding: 88px 16px;
+    }
+
+    .container {
+      @apply --layout-horizontal;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .container > * {
+      @apply --layout-flex;
+    }
+
+    .container img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .container h3 {
+      font-size: 32px;
+      font-weight: 300;
+      margin: 24px 0;
+    }
+
+    .container p {
+      line-height: 1.5;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        @apply --layout-vertical;
+      }
+    }
+
+    paper-input{
+      margin-bottom: 14px;
+      margin-top: 50px;
+      text-shadow: 0px 2px 2px rgba(58, 58, 58, 1);
+      --primary-text-color: #f1bc38;
+      --paper-input-container-color: #f1bc38;
+      --paper-input-container-focus-color: #f1bc38;
+      --paper-input-container-invalid-color: #f1bc38;
+      width: 60%;
+    }
+
+    paper-dropdown-menu{
+      margin-bottom: 14px;
+      margin-top: 50px;
+
+      --primary-text-color: #f1bc38;
+      --paper-input-container-color: #f1bc38;
+      --paper-input-container-focus-color: #f1bc38;
+      --paper-input-container-invalid-color: #f1bc38;
+      width: 60%;
+      font-size: var(--big-height);
+
+    }
+
+    paper-button {
+      background-color: #f1bc38;
+      color:black;
+    }
+
+    a {
+      border-bottom: 3px solid #f1bc38;
+      cursor: pointer;
+    }
+
   </style>
 
-  <h2>Hello {{playerName}} welcome to pubgwin</h2>
-  <paper-input label="ENTER PLAYERNAME (Case sensitive!)" value="{{playerName}}"></paper-input>
-<br><br>
-  <paper-dropdown-menu on-iron-select="_itemSelected" label="Region" vertical-offset="60">
-    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
-      <paper-item>EU</paper-item>
-      <paper-item>NA</paper-item>
-      <paper-item>OC</paper-item>
-      <paper-item>SEA</paper-item>
-      <paper-item>AS</paper-item>
-      <paper-item>SA</paper-item>
-      <paper-item>JP</paper-item>
-      <paper-item>KRJP</paper-item>
-      <paper-item>KAKAO</paper-item>
-    </paper-listbox>
-  </paper-dropdown-menu>
-<br><br>
-  <paper-input label="ENTER API KEY" value={{apiKey}}></paper-input>
-  <p>Click <a target="_blank" href="https://developer.playbattlegrounds.com/">here</a> to get an API key.</p>
-  <p><a href="">Why do I need this?</a></p>
-  <br>
-  <paper-button disabled=[[!allFieldsEntered]] raised on-click="go">GET WIN</paper-button>
+  <app-header-layout>
+
+    <header>
+
+      <h2>Hello {{playerName}} welcome to pubgwincount.gg!</h2>
+      <paper-input label="ENTER PLAYERNAME (Case sensitive!)" value="{{playerName}}"></paper-input>
+
+      <paper-dropdown-menu on-iron-select="_itemSelected" label="Region" vertical-offset="60">
+        <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
+          <paper-item>EU</paper-item>
+          <paper-item>NA</paper-item>
+          <paper-item>OC</paper-item>
+          <paper-item>SEA</paper-item>
+          <paper-item>AS</paper-item>
+          <paper-item>SA</paper-item>
+          <paper-item>JP</paper-item>
+          <paper-item>KRJP</paper-item>
+          <paper-item>KAKAO</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+
+      <paper-input label="ENTER API KEY" value={{apiKey}}></paper-input>
+
+      <p>Click <a target="_blank" href="https://developer.playbattlegrounds.com/">here</a> to get an API key.</p>
+      <p><a on-tap="_goToWhy">Why do I need an API key?</a></p>
+      <br>
+      <paper-button disabled=[[!allFieldsEntered]] raised on-click="go">GET WINS!</paper-button>
+
+    </header>
+
+    <section id="about">
+      <div class="container">
+        <div>
+          <img src="https://d1u5p3l4wpay3k.cloudfront.net/battlegrounds_gamepedia_en/6/6c/AKM.png">
+        </div>
+        <div>
+          <h3>How to use</h3>
+          <p>Input your player name (this is case sensitive!), region, and API key, and click the GET WINS! button. You will be redirected to a page that will automatically update when you won a game! Easy peasy japanesey.</p>
+          <p>You can input the URL of the page you were redirected to in OBS at: Scene -> Source -> Browsersource. You can adjust the size of the window there, too.</p><p>If you want to reset the counter, you can refresh the page in OBS by going to: Browsersource -> Properties -> Restart.</p><p>The PUBG API does not hold information for the test server.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="why">
+      <div class="container">
+        <div>
+          <img src="http://www.pubgmap.com/images/items/240/icon_equipment_Head_G_01.png">
+        </div>
+        <div>
+          <h3>Why do I need an API key?</h3>
+          <p>The PUBG API has a rate limit. What this means if that too many requests are being done to their API, it will block that API key. If every user inputs their own API key, there will be no rate limit issues. Requesting an API key is easy, and free. You can do so <a target="_blank" href="https://developer.playbattlegrounds.com/">here</a>.</p>
+          <p>Pubgwincount.gg does not save or store your API key.</p>
+        </div>
+      </div>
+    </section>
+
+  </app-header-layout>
 
 </template>
 
@@ -67,6 +234,10 @@
             computed: '_validateFields(playerName, apiKey)'
           }
         };
+      }
+
+      _goToWhy(){
+        this.$.why.scrollIntoView();
       }
 
       _validateFields() {
