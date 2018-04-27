@@ -9,37 +9,35 @@
     <style>
     :host {
       display: block;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgb(0,255,0);
     }
   </style>
   <h3>player name(route): {{playerName}}</h3>
 
-  <template is="dom-if" if=[[!loading]]>
-    <h3>api player response: [[res]]</h3>
+  <template is="dom-if" if=[[!playerError.status]]>
+    <template is="dom-if" if=[[!loading]]>
+      <h3>api player response: [[res]]</h3>
+    </template>
+
+    <template is="dom-if" if=[[loading]]>
+      <paper-spinner active></paper-spinner>
+    </template>
+
+
+    <template is="dom-if" if=[[!loadingRank]]>
+      <h3>Amount of wins: [[wins]]</h3>
+    </template>
+
+    <template is="dom-if" if=[[loadingRank]]>
+      <paper-spinner active></paper-spinner>
+    </template>
   </template>
-
-  <template is="dom-if" if=[[loading]]>
-    <paper-spinner active></paper-spinner>
-  </template>
-
-
-  <template is="dom-if" if=[[!loadingRank]]>
-    <h3>Amount of wins: [[wins]]</h3>
-  </template>
-
-  <template is="dom-if" if=[[loadingRank]]>
-    <paper-spinner active></paper-spinner>
-  </template>
-
-  <br><br><br>
 
   <template is="dom-if" if=[[playerError.status]]>
     [[playerError.message]]
   </template>
-
-  <template is="dom-if" if=[[!playerError.status]]>
-    <paper-spinner active></paper-spinner>
-  </template>
-
 
 </template>
 
@@ -91,24 +89,24 @@
       super.ready();
 
       this.getData();
-
       setInterval(() => {
         this.getData();
-      }, 60000);
+      }, 10000);
       
     };
 
     getData(){
       const headers = {
         headers: {
-          'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkMWZlODUxMC0xOGQ1LTAxMzYtYjdkMC0wNjk4NDNiNWIwOTUiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTIyNjk1NTM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InBhc3NsZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.pcsr57XH1SJqS2ZwCjq-q9pon_D9mkkUqaGq6UWE-88",
+          'Authorization': `Bearer ${this.apiKey}`,
           'Accept': 'application/vnd.api+json',
           'Content-Type': 'application/json'
         } 
       }
 
-      axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
+      axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
         let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
+        this.set('playerError.status', false);
 
         if(newestMatchId !== this.oldMatchId){
           this.oldMatchId = newestMatchId;
@@ -116,7 +114,7 @@
           this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
           this.loading = false;
 
-          axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res) => {
+          axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/matches/${newestMatchId}`, headers).then( (res) => {
             let player = res.data.included.filter( (item) => {
               return item.type === 'participant' && item.attributes.stats.name === this.playerName;
             })[0];
@@ -137,10 +135,14 @@
 
             console.log("Success");
           });
+        } else {
+          console.log('no new match');
         }
       }).catch((err) => {
-        console.log(err);
+        console.log(err.response);
         console.log(err.response.status);
+
+        this.set('playerError.status', true);
 
         if(err.response.status === 401){
           this.set('playerError.message', 'Invalid API key!');

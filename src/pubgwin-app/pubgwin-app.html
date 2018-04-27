@@ -1,37 +1,87 @@
+<link rel="import" href="../../bower_components/web-animations-js/web-animations-next.min.html">
+
+
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+
+
 
 <dom-module id="pubgwin-app">
   <template>
     <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello {{playerName}} welcome to pubgwin</h2>
-    <paper-input label="ENTER PLAYERNAME" value="{{playerName}}"></paper-input>
-    <paper-button raised on-click="go">GET WIN</paper-button>
+    :host {
+      display: block;
+    }
+  </style>
 
-  </template>
+  <h2>Hello {{playerName}} welcome to pubgwin</h2>
+  <paper-input label="ENTER PLAYERNAME (Case sensitive!)" value="{{playerName}}"></paper-input>
+<br><br>
+  <paper-dropdown-menu on-iron-select="_itemSelected" label="Region" vertical-offset="60">
+    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
+      <paper-item>EU</paper-item>
+      <paper-item>NA</paper-item>
+      <paper-item>OC</paper-item>
+      <paper-item>SEA</paper-item>
+      <paper-item>AS</paper-item>
+      <paper-item>SA</paper-item>
+      <paper-item>JP</paper-item>
+      <paper-item>KRJP</paper-item>
+      <paper-item>KAKAO</paper-item>
+    </paper-listbox>
+  </paper-dropdown-menu>
+<br><br>
+  <paper-input label="ENTER API KEY" value={{apiKey}}></paper-input>
+  <p>Click <a target="_blank" href="https://developer.playbattlegrounds.com/">here</a> to get an API key.</p>
+  <p><a href="">Why do I need this?</a></p>
+  <br>
+  <paper-button disabled=[[!allFieldsEntered]] raised on-click="go">GET WIN</paper-button>
 
-  <script>
+</template>
+
+<script>
     /**
      * @customElement
      * @polymer
      */
-    class PubgwinApp extends Polymer.Element {
+     class PubgwinApp extends Polymer.Element {
       static get is() { return 'pubgwin-app'; }
       static get properties() {
         return {
           playerName: {
             type: String
+          },
+          apiKey: {
+            type: String
+          },
+          region: {
+            type: String
+          },
+          allFieldsEntered: {
+            type: Boolean,
+            value: false,
+            computed: '_validateFields(playerName, apiKey)'
           }
         };
       }
 
+      _validateFields() {
+        return !!this.playerName && !!this.apiKey;
+      }
+
+      _itemSelected(e) {
+        var selectedItem = e.target.selectedItem;
+        if (selectedItem) {
+          this.region = `pc-${selectedItem.innerText.toLowerCase()}`;
+        }
+      }
+
       go(){
-        location.href = '/'+this.playerName;
+        location.href = `/${this.playerName}/${this.region}?apiKey=${this.apiKey}`;
       }
     }
 
