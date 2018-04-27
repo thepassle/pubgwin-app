@@ -213,7 +213,7 @@
 
       setInterval(() => {
         this.getData();
-      }, 60000);
+      }, 10000);
       
     };
 
@@ -229,12 +229,15 @@
       axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
         // console.log(res);
         // console.log("getting player");
+        console.log(res.data);
         let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
         this.set('playerError.status', false);
+        console.log(res.data.data[0].relationships.matches);
+        console.log(newestMatchId);
+        console.log(this.oldMatchId);
 
         if(newestMatchId !== this.oldMatchId){
-          this.oldMatchId = newestMatchId;
-          
+          console.log("NEW MATCH:");
           this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
           this.loading = false;
 
@@ -247,10 +250,12 @@
 
             if(this.initialized){
               if(lastRank === 1){
+                console.log("Win!");
                 this.wins += 1;                  
               }
             } 
 
+            console.log("No win :(");
             this.loadingRank = false;
 
             if(!this.initialized){
@@ -261,8 +266,9 @@
             // setTimeout(()=>{
             //   this.$.modal.close();
             // }, 5000);
-
+            console.log("");
             // console.log("Success");
+            this.oldMatchId = newestMatchId;
           });
         } else {
           // console.log('no new match');
