@@ -7,117 +7,154 @@
 <dom-module id="pubgwin-app2">
   <template>
     <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h3>player name(route): {{playerName}}</h3>
-    
-    <template is="dom-if" if=[[!loading]]>
-      <h3>api player response: [[res]]</h3>
-    </template>
+    :host {
+      display: block;
+    }
+  </style>
+  <h3>player name(route): {{playerName}}</h3>
 
-    <template is="dom-if" if=[[loading]]>
-      <paper-spinner active></paper-spinner>
-    </template>
-
-
-    <template is="dom-if" if=[[!loadingRank]]>
-      <h3>Amount of wins: [[wins]]</h3>
-    </template>
-
-    <template is="dom-if" if=[[loadingRank]]>
-      <paper-spinner active></paper-spinner>
-    </template>
-
-
+  <template is="dom-if" if=[[!loading]]>
+    <h3>api player response: [[res]]</h3>
   </template>
 
-  <script>
+  <template is="dom-if" if=[[loading]]>
+    <paper-spinner active></paper-spinner>
+  </template>
 
-    class PubgwinApp2 extends Polymer.Element {
-      static get is() { return 'pubgwin-app2'; }
-      static get properties() {
-        return {
-          res: {
-            type: String
-          },
 
-          loading: {
-            type: Boolean,
-            value: true
-          },
-          loadingRank: {
-            type: Boolean,
-            value: true
-          },
-          oldMatchId: {
-            type: String,
-            value: ""
-          },
-          wins: {
-            type: Number,
-            value: 0
+  <template is="dom-if" if=[[!loadingRank]]>
+    <h3>Amount of wins: [[wins]]</h3>
+  </template>
+
+  <template is="dom-if" if=[[loadingRank]]>
+    <paper-spinner active></paper-spinner>
+  </template>
+
+  <br><br><br>
+
+  <template is="dom-if" if=[[playerError.status]]>
+    [[playerError.message]]
+  </template>
+
+  <template is="dom-if" if=[[!playerError.status]]>
+    <paper-spinner active></paper-spinner>
+  </template>
+
+
+</template>
+
+<script>
+
+  class PubgwinApp2 extends Polymer.Element {
+    static get is() { return 'pubgwin-app2'; }
+    static get properties() {
+      return {
+        res: {
+          type: String
+        },
+
+        loading: {
+          type: Boolean,
+          value: true
+        },
+        loadingRank: {
+          type: Boolean,
+          value: true
+        },
+        oldMatchId: {
+          type: String,
+          value: ""
+        },
+        wins: {
+          type: Number,
+          value: 0
+        },
+        initialized: {
+          type: Boolean,
+          value: false,
+        },
+
+        playerError: {
+          type: Object,
+          value: () => {
+            return {
+              "status": false,
+              "message": "",
+            }
           }
-        };
-      }
-
-      ready() {
-        super.ready();
-          
-        this.getData();
-
-        setInterval(() => {
-          this.getData();
-        }, 60000);
-      
-      };
-
-      getData(){
-        const headers = {
-          headers: {
-            'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkMWZlODUxMC0xOGQ1LTAxMzYtYjdkMC0wNjk4NDNiNWIwOTUiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTIyNjk1NTM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InBhc3NsZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.pcsr57XH1SJqS2ZwCjq-q9pon_D9mkkUqaGq6UWE-88",
-            'Accept': 'application/vnd.api+json',
-            'Content-Type': 'application/json'
-          } 
         }
-        
-        axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
-          let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
-          
-          console.log(res);
 
-          if(newestMatchId !== this.oldMatchId){
-            this.oldMatchId = newestMatchId;
-          
-            this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
-            this.loading = false;
-
-            axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res) => {
-              console.log(res);
-              let player = res.data.included.filter((item)=>{
-                return item.type === 'participant' && item.attributes.stats.name === this.playerName;
-              })[0];
-
-              let lastRank = player.attributes.stats.winPlace;
-              if(lastRank === 1){
-                this.wins += 1;
-                console.log("Win! :)");
-              } else {
-                console.log("No win :(");
-              }
-
-              this.loadingRank = false;
-              console.log(player);
-            });
-          } else {
-            console.log("No new matches");
-          }
-        });
-      }
-
+      };
     }
 
-    window.customElements.define(PubgwinApp2.is, PubgwinApp2);
-  </script>
+    ready() {
+      super.ready();
+
+      this.getData();
+
+      setInterval(() => {
+        this.getData();
+      }, 60000);
+      
+    };
+
+    getData(){
+      const headers = {
+        headers: {
+          'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkMWZlODUxMC0xOGQ1LTAxMzYtYjdkMC0wNjk4NDNiNWIwOTUiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNTIyNjk1NTM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InBhc3NsZSIsInNjb3BlIjoiY29tbXVuaXR5IiwibGltaXQiOjEwfQ.pcsr57XH1SJqS2ZwCjq-q9pon_D9mkkUqaGq6UWE-88",
+          'Accept': 'application/vnd.api+json',
+          'Content-Type': 'application/json'
+        } 
+      }
+
+      axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
+        let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
+
+        if(newestMatchId !== this.oldMatchId){
+          this.oldMatchId = newestMatchId;
+          
+          this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
+          this.loading = false;
+
+          axios.get(`https://api.playbattlegrounds.com/shards/pc-eu/matches/${newestMatchId}`, headers).then( (res) => {
+            let player = res.data.included.filter( (item) => {
+              return item.type === 'participant' && item.attributes.stats.name === this.playerName;
+            })[0];
+
+            let lastRank = player.attributes.stats.winPlace;
+
+            if(this.initialized){
+              if(lastRank === 1){
+                this.wins += 1;                  
+              }
+            } 
+
+            this.loadingRank = false;
+
+            if(!this.initialized){
+              this.initialized = true;
+            }
+
+            console.log("Success");
+          });
+        }
+      }).catch((err) => {
+        console.log(err);
+        console.log(err.response.status);
+
+        if(err.response.status === 401){
+          this.set('playerError.message', 'Invalid API key!');
+        } else {
+          this.set('playerError.message', err.response.data.errors[0].detail);
+        }
+
+        this.loading = false;
+        this.loadingRank = false;
+      });
+    }
+
+  }
+
+  window.customElements.define(PubgwinApp2.is, PubgwinApp2);
+</script>
 </dom-module>
