@@ -1,0 +1,14 @@
+{
+  "name": "pubgwin-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/thepassle/pubgwin-app.git",
+  "author": "Pascal schilp mac <pschilp@sogyo.nl>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "polymer serve --open"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
+}

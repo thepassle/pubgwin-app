@@ -1,0 +1,42 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/pubgwin-app/pubgwin-app.html",
+  "fragments": [
+    "src/pubgwin-app/pubgwin-app.html",
+    "src/pubgwin-app/win-counter.html",
+    "src/pubgwin-app/utils/google-analytics.html"
+  ],
+  "sources": [
+    "src/**/*",
+    "bower.json",
+    "package.json",
+    "index.html",
+    "src/pubgwin-app/pubgwin-app.html",
+    "src/pubgwin-app/pubgwin-app.html",
+    "src/pubgwin-app/win-counter.html",
+    "src/pubgwin-app/utils/google-analytics.html"
+  ],
+  "extraDependencies": [
+    "bower_components/webcomponentsjs/*.js",
+    "manifest.json",
+    "bower_components/webcomponentsjs/*.js"
+  ],
+  "builds": [
+    {
+      "js": {
+        "minify": true
+      },
+      "css": {
+        "minify": true
+      },
+      "html": {
+        "minify": true
+      }
+    }
+  ],
+  "lint": {
+    "rules": [
+      "polymer-2"
+    ]
+  }
+}

@@ -13,7 +13,7 @@
     <style>
     :host {
       font-family: 'Roboto';
-      --icon-size: 60px; 
+      --icon-size: 3vw; 
 
       display: block;
       height: 100vh;
@@ -47,6 +47,9 @@
 
     paper-spinner {
       font-size: 0px;
+      width: 9vw;
+      height: 9vw;
+      --paper-spinner-stroke-width: 15px;
     }
 
     paper-dialog {
@@ -80,40 +83,44 @@
   <div class="wrapper">
 
     <div class="title">
+
+      <template is="dom-if" if=[[error.status]]>
+        <iron-icon class="nok-icon" icon="icons:cancel"></iron-icon>
+      </template>
+
       <template is="dom-if" if=[[loading]]>
         <paper-spinner active></paper-spinner>
       </template>
 
       <template is="dom-if" if=[[!loading]]>
         <template is="dom-if" if=[[!error.status]]>
-          <iron-icon class="ok-icon" icon="icons:check-circle"></iron-icon>
+          <h1>
+            WINS
+          </h1>
         </template>
       </template>
 
-      <template is="dom-if" if=[[error.status]]>
-        <iron-icon class="nok-icon" icon="icons:cancel"></iron-icon>
+      <template is="dom-if" if=[[!error.status]]>
+        <h1>:</h1>
       </template>
-      <h1>
-        WINS:
-      </h1>
 
       <template is="dom-if" if=[[!error.status]]>
+        <template is="dom-if" if=[[loadingMatch]]>
+          <paper-spinner active></paper-spinner>
+        </template>
+
         <template is="dom-if" if=[[!loadingMatch]]>
           <h1>[[wins]]</h1>
         </template>
-
-        <template is="dom-if" if=[[loadingMatch]]>
-          <paper-spinner active></paper-spinner>
-        </template>
       </template>
 
       <template is="dom-if" if=[[error.status]]>
-        <template is="dom-if" if=[[!loadingMatch]]>
-          <h1 class="error">[[error.message]]</h1>
-        </template>
-
         <template is="dom-if" if=[[loadingMatch]]>
           <paper-spinner active></paper-spinner>
+        </template>
+
+        <template is="dom-if" if=[[!loadingMatch]]>
+          <h1 class="error">[[error.message]]</h1>
         </template>
       </template>
     </div>
@@ -150,7 +157,6 @@ class WinCounter extends Polymer.Element {
         type: Boolean,
         value: false,
       },
-
       error: {
         type: Object,
         value: () => {
@@ -161,10 +167,6 @@ class WinCounter extends Polymer.Element {
         }
       }
     };
-  }
-
-  toUpper(name) {
-    return name.toUpperCase();
   }
 
   ready() {
@@ -188,8 +190,7 @@ class WinCounter extends Polymer.Element {
     }
 
     axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
-        // console.log(res);
-        // console.log("getting player");
+
         console.log(res.data);
         let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
         this.set('error.status', false);
@@ -207,10 +208,10 @@ class WinCounter extends Polymer.Element {
             })[0];
 
             let lastRank = player.attributes.stats.winPlace;
-
+            console.log("Last rank: " + lastRank);
             if(this.initialized){
               if(lastRank === 1){
-                console.log("Win!");
+                console.log("Win! :)");
                 this.wins += 1;                  
               }
             } 

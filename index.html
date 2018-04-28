@@ -26,8 +26,11 @@
     <link rel="import" href="/src/pubgwin-app/win-counter.html">
     <style>body { margin: 0px; }</style>
   </head>
-  <body>                        
+  <body>                     
+<!--       routing:
+      https://github.com/Polymer/shop/blob/master/src/shop-analytics.html   --> 
       <google-analytics key="UA-xxxxxxxx-1"></google-analytics>
+
       <app-router>
         <app-route path="/" import="/src/pubgwin-app/pubgwin-app.html"></app-route>
         <app-route path="/:playerName/:region" import="/src/pubgwin-app/win-counter.html"></app-route>
