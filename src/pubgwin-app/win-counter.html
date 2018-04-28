@@ -8,13 +8,12 @@
 
 <script src="../../node_modules/axios/dist/axios.min.js"></script>
 
-
 <dom-module id="win-counter">
   <template>
     <style>
     :host {
       font-family: 'Roboto';
-      --icon-size: 32px; 
+      --icon-size: 60px; 
 
       display: block;
       height: 100vh;
@@ -29,8 +28,8 @@
     }
 
     .title{
-      font-size: 3vw;
-      text-align: center;
+      font-size: 9vw;
+      text-align: left;
       vertical-align: center;
       flex: 1;
       flex-grow: 1;
@@ -46,37 +45,6 @@
       margin-left: 25px;
     }
 
-    .count{
-      font-size: 40vw;
-      text-align: center;
-      vertical-align: center;
-      flex: 1;
-      flex-grow: 5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      color: #fff;
-      text-shadow:0px 4px 15px #000000;
-    }
-
-    .error{
-      font-size: 4vw;
-      text-align: center;
-      vertical-align: center;
-      flex: 1;
-      flex-grow: 5;
-      border-left: var(--border-size) solid white;
-      border-right: var(--border-size) solid white;
-      border-bottom: var(--border-size) solid white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      color: #fff;
-      text-shadow:0px 4px 15px #000000;
-    }
-
     paper-spinner {
       font-size: 0px;
     }
@@ -88,6 +56,10 @@
       word-wrap: break-word;
     }
 
+    .error {
+      font-size: 3vw;
+    }
+
     #copy {
       cursor: copy;
     }
@@ -95,7 +67,6 @@
     .ok-icon{
       --iron-icon-height: var(--icon-size);
       --iron-icon-width: var(--icon-size);
-      --iron-icon-fill-color: rgb(0, 191, 255);
     }
 
     .nok-icon{
@@ -123,35 +94,29 @@
         <iron-icon class="nok-icon" icon="icons:cancel"></iron-icon>
       </template>
       <h1>
-        {{toUpper(playerName)}} WINS:
+        WINS:
       </h1>
+
+      <template is="dom-if" if=[[!playerError.status]]>
+        <template is="dom-if" if=[[!loadingRank]]>
+          <h1>[[wins]]</h1>
+        </template>
+
+        <template is="dom-if" if=[[loadingRank]]>
+          <paper-spinner active></paper-spinner>
+        </template>
+      </template>
+
+      <template is="dom-if" if=[[playerError.status]]>
+        <template is="dom-if" if=[[!loadingRank]]>
+          <h1 class="error">[[playerError.message]]</h1>
+        </template>
+
+        <template is="dom-if" if=[[loadingRank]]>
+          <paper-spinner active></paper-spinner>
+        </template>
+      </template>
     </div>
-  
-    <template is="dom-if" if=[[!playerError.status]]>
-      <div class="count">
-
-        <template is="dom-if" if=[[!loadingRank]]>
-          <h3>[[wins]]</h3>
-        </template>
-
-        <template is="dom-if" if=[[loadingRank]]>
-          <paper-spinner active></paper-spinner>
-        </template>
-
-      </div>
-    </template>
-
-    <template is="dom-if" if=[[playerError.status]]>
-      <div class="error">
-        <template is="dom-if" if=[[!loadingRank]]>
-          <div>[[playerError.message]]</div>
-        </template>
-
-        <template is="dom-if" if=[[loadingRank]]>
-          <paper-spinner active></paper-spinner>
-        </template>
-      </div>
-    </template>
 
   </div>
 </template>
@@ -160,73 +125,69 @@
 
 // to do: API to keep track of users
 
-  class WinCounter extends Polymer.Element {
-    static get is() { return 'win-counter'; }
-    static get properties() {
-      return {
-        res: {
-          type: String
-        },
+class WinCounter extends Polymer.Element {
+  static get is() { return 'win-counter'; }
+  static get properties() {
+    return {
+      loading: {
+        type: Boolean,
+        value: true
+      },
+      loadingRank: {
+        type: Boolean,
+        value: true
+      },
+      oldMatchId: {
+        type: String,
+        value: ""
+      },
+      wins: {
+        type: Number,
+        value: 0
+      },
+      initialized: {
+        type: Boolean,
+        value: false,
+      },
 
-        loading: {
-          type: Boolean,
-          value: true
-        },
-        loadingRank: {
-          type: Boolean,
-          value: true
-        },
-        oldMatchId: {
-          type: String,
-          value: ""
-        },
-        wins: {
-          type: Number,
-          value: 0
-        },
-        initialized: {
-          type: Boolean,
-          value: false,
-        },
-
-        playerError: {
-          type: Object,
-          value: () => {
-            return {
-              "status": false,
-              "message": "",
-            }
+      playerError: {
+        type: Object,
+        value: () => {
+          return {
+            "status": false,
+            "message": "",
           }
         }
-
-      };
-    }
-
-    toUpper(name) {
-      return name.toUpperCase();
-    }
-
-    ready() {
-      super.ready();
-
-      this.getData();
-
-      setInterval(() => {
-        this.getData();
-      }, 20000);
-      
-    };
-
-    getData(){
-      const headers = {
-        headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Accept': 'application/vnd.api+json',
-          'Content-Type': 'application/json'
-        } 
       }
 
-      axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
+    };
+  }
+
+  toUpper(name) {
+    return name.toUpperCase();
+  }
+
+  ready() {
+    super.ready();
+
+    this.getData();
+
+    setInterval(() => {
+      this.getData();
+    }, 20000);
+
+  };
+
+  getData(){
+    const headers = {
+      headers: {
+        'Authorization': `Bearer ${this.apiKey}`,
+        'Accept': 'application/vnd.api+json',
+        'Content-Type': 'application/json'
+      } 
+    }
+
+    axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
         // console.log(res);
         // console.log("getting player");
         console.log(res.data);
@@ -238,7 +199,6 @@
 
         if(newestMatchId !== this.oldMatchId){
           console.log("NEW MATCH:");
-          this.res = res.data.data[0].attributes.name + " " + res.data.data[0].id;
           this.loading = false;
 
           axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/matches/${newestMatchId}`, headers).then( (res) => {
@@ -290,7 +250,7 @@
         this.loading = false;
         this.loadingRank = false;
       });
-    
+
     }
 
   }
