@@ -85,34 +85,34 @@
       </template>
 
       <template is="dom-if" if=[[!loading]]>
-        <template is="dom-if" if=[[!playerError.status]]>
+        <template is="dom-if" if=[[!error.status]]>
           <iron-icon class="ok-icon" icon="icons:check-circle"></iron-icon>
         </template>
       </template>
 
-      <template is="dom-if" if=[[playerError.status]]>
+      <template is="dom-if" if=[[error.status]]>
         <iron-icon class="nok-icon" icon="icons:cancel"></iron-icon>
       </template>
       <h1>
         WINS:
       </h1>
 
-      <template is="dom-if" if=[[!playerError.status]]>
-        <template is="dom-if" if=[[!loadingRank]]>
+      <template is="dom-if" if=[[!error.status]]>
+        <template is="dom-if" if=[[!loadingMatch]]>
           <h1>[[wins]]</h1>
         </template>
 
-        <template is="dom-if" if=[[loadingRank]]>
+        <template is="dom-if" if=[[loadingMatch]]>
           <paper-spinner active></paper-spinner>
         </template>
       </template>
 
-      <template is="dom-if" if=[[playerError.status]]>
-        <template is="dom-if" if=[[!loadingRank]]>
-          <h1 class="error">[[playerError.message]]</h1>
+      <template is="dom-if" if=[[error.status]]>
+        <template is="dom-if" if=[[!loadingMatch]]>
+          <h1 class="error">[[error.message]]</h1>
         </template>
 
-        <template is="dom-if" if=[[loadingRank]]>
+        <template is="dom-if" if=[[loadingMatch]]>
           <paper-spinner active></paper-spinner>
         </template>
       </template>
@@ -123,7 +123,8 @@
 
 <script>
 
-// to do: API to keep track of users
+// get domain
+// get google analytics
 
 class WinCounter extends Polymer.Element {
   static get is() { return 'win-counter'; }
@@ -133,7 +134,7 @@ class WinCounter extends Polymer.Element {
         type: Boolean,
         value: true
       },
-      loadingRank: {
+      loadingMatch: {
         type: Boolean,
         value: true
       },
@@ -150,7 +151,7 @@ class WinCounter extends Polymer.Element {
         value: false,
       },
 
-      playerError: {
+      error: {
         type: Object,
         value: () => {
           return {
@@ -159,7 +160,6 @@ class WinCounter extends Polymer.Element {
           }
         }
       }
-
     };
   }
 
@@ -192,7 +192,7 @@ class WinCounter extends Polymer.Element {
         // console.log("getting player");
         console.log(res.data);
         let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
-        this.set('playerError.status', false);
+        this.set('error.status', false);
         console.log(res.data.data[0].relationships.matches);
         console.log(newestMatchId);
         console.log(this.oldMatchId);
@@ -216,18 +216,26 @@ class WinCounter extends Polymer.Element {
             } 
 
             console.log("No win :(");
-            this.loadingRank = false;
+            this.loadingMatch = false;
 
             if(!this.initialized){
+              let data = JSON.stringify({ name: this.playerName });
+              
+              // save user
+              axios.post('https://pubg-win-api.herokuapp.com/api/users', data, {
+                  headers: {
+                      'Content-Type': 'application/json',
+                  }
+              }).then( (res) => {
+                console.log(res);
+              }).catch((err)=>{
+                console.log(err);
+              })
+
               this.initialized = true;
             }
 
-            // this.$.modal.open();
-            // setTimeout(()=>{
-            //   this.$.modal.close();
-            // }, 5000);
             console.log("");
-            // console.log("Success");
             this.oldMatchId = newestMatchId;
           });
         } else {
@@ -237,18 +245,18 @@ class WinCounter extends Polymer.Element {
         // console.log(err.response);
         // console.log(err.response.status);
 
-        this.set('playerError.status', true);
+        this.set('error.status', true);
 
         if(err.response.status === 401){
-          this.set('playerError.message', 'Invalid API key!');
+          this.set('error.message', 'Invalid API key!');
         } else if (err.response.status === 429){
-          this.set('playerError.message', 'Too many requests!');
+          this.set('error.message', 'Too many requests!');
         } else {
-          this.set('playerError.message', err.response.data.errors[0].detail);
+          this.set('error.message', err.response.data.errors[0].detail);
         }
 
         this.loading = false;
-        this.loadingRank = false;
+        this.loadingMatch = false;
       });
 
     }
