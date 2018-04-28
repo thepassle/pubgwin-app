@@ -52,24 +52,8 @@
       --paper-spinner-stroke-width: 15px;
     }
 
-    paper-dialog {
-      width: calc(100% - 20px);
-      max-width: 600px;
-      height: auto;
-      word-wrap: break-word;
-    }
-
     .error {
       font-size: 3vw;
-    }
-
-    #copy {
-      cursor: copy;
-    }
-
-    .ok-icon{
-      --iron-icon-height: var(--icon-size);
-      --iron-icon-width: var(--icon-size);
     }
 
     .nok-icon{
@@ -115,10 +99,6 @@
       </template>
 
       <template is="dom-if" if=[[error.status]]>
-        <template is="dom-if" if=[[loadingMatch]]>
-          <paper-spinner active></paper-spinner>
-        </template>
-
         <template is="dom-if" if=[[!loadingMatch]]>
           <h1 class="error">[[error.message]]</h1>
         </template>
@@ -192,80 +172,85 @@ class WinCounter extends Polymer.Element {
 
     axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
 
-        console.log(res.data);
-        let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
-        this.set('error.status', false);
-        console.log(res.data.data[0].relationships.matches);
-        console.log(newestMatchId);
-        console.log(this.oldMatchId);
+      console.log(res.data);
+      let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
+      this.set('error.status', false);
+      console.log(res.data.data[0].relationships.matches);
+      console.log(newestMatchId);
+      console.log(this.oldMatchId);
 
-        if(newestMatchId !== this.oldMatchId){
-          console.log("NEW MATCH:");
-          this.loading = false;
+      if(newestMatchId !== this.oldMatchId){
+        console.log("NEW MATCH:");
 
-          axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/matches/${newestMatchId}`, headers).then( (res) => {
-            let player = res.data.included.filter( (item) => {
-              return item.type === 'participant' && item.attributes.stats.name === this.playerName;
-            })[0];
+        axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/matches/${newestMatchId}`, headers).then( (res) => {
+          let player = res.data.included.filter( (item) => {
+            return item.type === 'participant' && item.attributes.stats.name === this.playerName;
+          })[0];
 
-            let lastRank = player.attributes.stats.winPlace;
+          let lastRank = player.attributes.stats.winPlace;
 
-            console.log("Last rank: " + lastRank);
-            if(this.initialized){
-              if(lastRank === 1){
-                console.log("Win! :)");
-                this.wins += 1;                  
-              }
-            } 
-
-            console.log("No win :(");
-            this.loadingMatch = false;
-
-            if(!this.initialized){
-              let data = JSON.stringify({ name: this.playerName });
-              
-              // save user
-              axios.post('https://pubg-win-api.herokuapp.com/api/users', data, {
-                  headers: {
-                      'Content-Type': 'application/json',
-                  }
-              }).then( (res) => {
-                console.log(res);
-              }).catch((err)=>{
-                console.log(err);
-              })
-
-              this.initialized = true;
+          console.log("Last rank: " + lastRank);
+          if(this.initialized){
+            if(lastRank === 1){
+              console.log("Win! :)");
+              this.wins += 1;                  
             }
+          } 
 
-            console.log("");
-            this.oldMatchId = newestMatchId;
-          });
-        } else {
-          // console.log('no new match');
-        }
-      }).catch((err) => {
-        // console.log(err.response);
-        // console.log(err.response.status);
+          console.log("No win :(");
+          this._doneLoading();
 
-        this.set('error.status', true);
+          if(!this.initialized){
+            this._saveUser();
+            this.initialized = true;
+          }
 
-        if(err.response.status === 401){
-          this.set('error.message', 'Invalid API key!');
-        } else if (err.response.status === 429){
-          this.set('error.message', 'Too many requests!');
-        } else {
-          this.set('error.message', err.response.data.errors[0].detail);
-        }
-
-        this.loading = false;
-        this.loadingMatch = false;
-      });
-
-    }
-
+          console.log("");
+          this.oldMatchId = newestMatchId;
+        }).catch((err)=>{
+          this._handleErr(err);
+        });
+      }
+    }).catch((err)=>{
+      this._handleErr(err);
+    });
   }
 
-  window.customElements.define(WinCounter.is, WinCounter);
+  _saveUser(){
+    let data = JSON.stringify({ name: this.playerName });
+
+    axios.post('https://pubg-win-api.herokuapp.com/api/users', data, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    }).catch((err)=>{
+      console.log(err);
+    });
+  }
+
+  _doneLoading(){
+    this.loading = false;
+    this.loadingMatch = false;
+  }
+
+  _handleErr(err){
+    this.set('error.status', true);
+
+    if(err.response.status === 401){
+      this.set('error.message', 'Invalid API key!');
+    } else if (err.response.status === 429){
+      this.set('error.message', 'Too many requests!');
+    } else {
+      this.set('error.message', err.response.data.errors[0].detail);
+    }
+
+    this._doneLoading();
+  }
+
+}
+
+
+
+window.customElements.define(WinCounter.is, WinCounter);
 </script>
 </dom-module>
