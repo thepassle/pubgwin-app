@@ -132,6 +132,7 @@
 
 // get domain
 // get google analytics
+// fix routes
 
 class WinCounter extends Polymer.Element {
   static get is() { return 'win-counter'; }
@@ -208,6 +209,7 @@ class WinCounter extends Polymer.Element {
             })[0];
 
             let lastRank = player.attributes.stats.winPlace;
+
             console.log("Last rank: " + lastRank);
             if(this.initialized){
               if(lastRank === 1){
