@@ -141,8 +141,6 @@
       </div>
     </template>
 
-
-
     <template is="dom-if" if=[[playerError.status]]>
       <div class="error">
         <template is="dom-if" if=[[!loadingRank]]>
@@ -159,6 +157,9 @@
 </template>
 
 <script>
+
+// to do: API to keep track of users
+// GA element
 
   class WinCounter extends Polymer.Element {
     static get is() { return 'win-counter'; }
