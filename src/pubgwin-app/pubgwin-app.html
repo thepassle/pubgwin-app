@@ -148,13 +148,37 @@
       cursor: pointer;
     }
 
+    #social{
+      position: fixed;
+      width: 40px;
+      height: auto;
+      z-index: 999;
+      left: 25px;
+      top: 25px;
+    }
+
+    #social img{
+      width: 40px;
+      margin-bottom: 5px;
+      height: 40px;
+    }
+
+    #social a{
+      border-bottom: 0px;
+    }
+
   </style>
+
+  <div id="social">
+    <a target="_blank" href="https://github.com/thepassle/pubgwin-app"><img style="width: 32px; margin-left:4px;" src="https://image.flaticon.com/icons/svg/25/25231.svg"/></a>
+    <a target="_blank" href="https://twitter.com/PubgWin_org"><img src="http://simpleicon.com/wp-content/uploads/twitter-2.png"/></a>
+  </div>
 
   <app-header-layout>
 
     <header>
 
-      <h2>Hello {{playerName}} welcome to pubgwincount.gg!</h2>
+      <h2>Hello {{playerName}} welcome to pubgwin.org!</h2>
       <paper-input label="ENTER PLAYERNAME (Case sensitive!)" value="{{playerName}}"></paper-input>
 
       <paper-dropdown-menu on-iron-select="_itemSelected" label="Region" vertical-offset="60">
@@ -183,7 +207,7 @@
     <section id="about">
       <div class="container">
         <div>
-          <img src="https://d1u5p3l4wpay3k.cloudfront.net/battlegrounds_gamepedia_en/6/6c/AKM.png">
+          <img src="http://www.pubgmap.com/images/items/240/icon_equipment_Head_G_01.png">
         </div>
         <div>
           <h3>How to use</h3>
@@ -196,13 +220,28 @@
     <section id="why">
       <div class="container">
         <div>
-          <img src="http://www.pubgmap.com/images/items/240/icon_equipment_Head_G_01.png">
+          <img src="https://pubgdmgstats.com/img/armor3.png">
         </div>
         <div>
           <h3>Why do I need an API key?</h3>
           <p>The PUBG API has a rate limit. What this means if that too many requests are being done to their API, it will block that API key. If every user inputs their own API key, there will be no rate limit issues. Requesting an API key is easy, and free. You can do so <a target="_blank" href="https://developer.playbattlegrounds.com/">here</a>.</p>
           <p>Your API key is personal and should not be shared!</p>
-          <p>Pubgwincount.gg does not save or store your API key.</p>
+          <p>Pubgwin.org does not save or store your API key.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div class="container">
+        <div>
+          <img src="https://d1u5p3l4wpay3k.cloudfront.net/battlegrounds_gamepedia_en/0/00/Icon_equipment_Back_C_01.png">
+        </div>
+        <div>
+          <h3>FAQ</h3>
+          <a>My wincounter did not update, why?</a>
+          <p>The API updates when the entire game is over, it usually takes a few minutes after you see the chicken dinner screen. But don't worry, the counter will update soon.</p>
+          <a>Where can I leave feedback/suggestions?</a>
+          <p>You can find me on twitter <a target="_blank" href="https://twitter.com/PubgWin_org">here.</a></p>
         </div>
       </div>
     </section>
