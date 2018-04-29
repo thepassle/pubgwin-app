@@ -19,6 +19,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet">
 
 <dom-module id="pubgwin-app">
 
@@ -68,6 +69,13 @@
       text-align: center;
     }
 
+    header.small {
+      font-family: 'Teko';
+      height: 34vh;
+      background-image: none;
+      color: black;
+    }
+
     header > h2 {
       color: #f1bc38;
       font-size: 56px;
@@ -77,6 +85,7 @@
 
     header > p {
       font-size: 24px;
+      margin: 10px;
     }
 
     section {
@@ -167,6 +176,37 @@
       border-bottom: 0px;
     }
 
+    .title{
+      font-size: 3vw;
+      text-align: left;
+      vertical-align: center;
+      flex: 1;
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      color: #fff;
+      text-shadow:0px 2px 10px #000000;
+    }
+
+    .title h1{
+      line-height: 8vw;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    .light {
+      background-color: rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+
+    .dark {
+      border-left: solid 3px black;
+      background-color: rgba(0, 0, 0, 0.4);
+      color: #b7b7b7;
+    }
+
   </style>
 
   <div id="social">
@@ -175,6 +215,18 @@
   </div>
 
   <app-header-layout>
+
+    <header class="small">      
+      <div class="title">
+
+        <h1 class="light">[[wins]]</h1>
+
+        <h1 class="dark">
+          WINS
+        </h1>
+
+      </div>
+    </header>
 
     <header>
 
@@ -268,12 +320,29 @@
           region: {
             type: String
           },
+          wins: {
+            type: Number,
+            value: 0
+          },
           allFieldsEntered: {
             type: Boolean,
             value: false,
             computed: '_validateFields(playerName, apiKey)'
           }
         };
+      }
+
+      ready() {
+        super.ready();
+
+        setInterval(()=>{
+          if(this.wins < 100){
+
+            this.wins += 1;          
+          } else {
+            this.wins = 0;
+          }
+        }, 1000);
       }
 
       _goToWhy(){

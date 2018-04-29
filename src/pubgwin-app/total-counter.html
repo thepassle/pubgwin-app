@@ -8,7 +8,7 @@
 
 <script src="../../node_modules/axios/dist/axios.min.js"></script>
 
-<dom-module id="win-counter">
+<dom-module id="total-counter">
   <template>
     <style>
     :host {
@@ -99,27 +99,27 @@
       </template>
 
       <template is="dom-if" if=[[!error.status]]>
-        <template is="dom-if" if=[[loadingMatch]]>
+        <template is="dom-if" if=[[loading]]>
           <h1 class="dark" style="font-size: 0px; line-height: 0px;">
             <paper-spinner class="white" active></paper-spinner>
           </h1>
         </template>
 
-        <template is="dom-if" if=[[!loadingMatch]]>
-          <h1 class="light">[[wins]]</h1>
+        <template is="dom-if" if=[[!loading]]>
+          <h1 class="light">[[total]]</h1>
         </template>
       </template>
 
       <template is="dom-if" if=[[!loading]]>
         <template is="dom-if" if=[[!error.status]]>
           <h1 class="dark">
-            WINS
+            TOTAL
           </h1>
         </template>
       </template>
 
       <template is="dom-if" if=[[error.status]]>
-        <template is="dom-if" if=[[!loadingMatch]]>
+        <template is="dom-if" if=[[!loading]]>
           <h1 class="error">[[error.message]]</h1>
         </template>
       </template>
@@ -130,34 +130,17 @@
 
 <script>
 
-// get domain
-// get google analytics
-// fix routes
-// design net als ingame 98 | ALIVE (font/zo'n zwarte transparante background)
-
-class WinCounter extends Polymer.Element {
-  static get is() { return 'win-counter'; }
+class TotalCounter extends Polymer.Element {
+  static get is() { return 'total-counter'; }
   static get properties() {
     return {
       loading: {
         type: Boolean,
         value: true
       },
-      loadingMatch: {
-        type: Boolean,
-        value: true
-      },
-      oldMatchId: {
-        type: String,
-        value: ""
-      },
-      wins: {
+      total: {
         type: Number,
         value: 0
-      },
-      initialized: {
-        type: Boolean,
-        value: false,
       },
       error: {
         type: Object,
@@ -178,91 +161,20 @@ class WinCounter extends Polymer.Element {
 
     setInterval(() => {
       this.getData();
-    }, 20000);
-
+    }, 60000);
   };
 
   getData(){
-    const headers = {
-      headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
-        'Accept': 'application/vnd.api+json',
-        'Content-Type': 'application/json'
-      } 
-    }
-
-    axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/players?filter[playerNames]=${this.playerName}`, headers).then( (res) => { 
-
-      console.log(res.data);
-      let newestMatchId = res.data.data[0].relationships.matches.data[0].id;
-      this.set('error.status', false);
-      console.log(res.data.data[0].relationships.matches);
-      console.log(newestMatchId);
-      console.log(this.oldMatchId);
-
-      if(newestMatchId !== this.oldMatchId){
-        console.log("NEW MATCH:");
-
-        axios.get(`https://api.playbattlegrounds.com/shards/${this.region}/matches/${newestMatchId}`, headers).then( (res) => {
-          let player = res.data.included.filter( (item) => {
-            return item.type === 'participant' && item.attributes.stats.name === this.playerName;
-          })[0];
-
-          let lastRank = player.attributes.stats.winPlace;
-
-          console.log("Last rank: " + lastRank);
-          if(this.initialized){
-            if(lastRank === 1){
-
-              this._incrementTotalWins();
-
-              console.log("Win! :)");
-              this.wins += 1;                  
-            }
-          } 
-
-          console.log("No win :(");
-          this._doneLoading();
-
-          if(!this.initialized){
-            this._saveUser();
-            this.initialized = true;
-          }
-
-          console.log("");
-          this.oldMatchId = newestMatchId;
-        }).catch((err)=>{
-          this._handleErr(err);
-        });
-      }
+     axios.get(`https://pubg-win-api.herokuapp.com/api/users/${this.playerName}`).then( (res) => {
+      this._doneLoading();
+      this.total = res.data.total;
     }).catch((err)=>{
       this._handleErr(err);
     });
   }
 
-  _incrementTotalWins(){
-    axios.put(`https://pubg-win-api.herokuapp.com/api/users/${this.playerName}`).then( (res) => {
-      console.log(res);
-    }).catch((err)=>{
-      console.log(err);
-    });
-  }
-
-  _saveUser(){
-    let data = JSON.stringify({ name: this.playerName });
-
-    axios.post('https://pubg-win-api.herokuapp.com/api/users', data, {
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    }).catch((err)=>{
-      console.log(err);
-    });
-  }
-
   _doneLoading(){
     this.loading = false;
-    this.loadingMatch = false;
   }
 
   _handleErr(err){
@@ -275,7 +187,6 @@ class WinCounter extends Polymer.Element {
     } else {
       this.set('error.message', err.response.data.errors[0].detail);
     }
-
     this._doneLoading();
   }
 
@@ -283,6 +194,6 @@ class WinCounter extends Polymer.Element {
 
 
 
-window.customElements.define(WinCounter.is, WinCounter);
+window.customElements.define(TotalCounter.is, TotalCounter);
 </script>
 </dom-module>

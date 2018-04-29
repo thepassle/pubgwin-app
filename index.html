@@ -24,6 +24,8 @@
 
     <link rel="import" href="/src/pubgwin-app/pubgwin-app.html">
     <link rel="import" href="/src/pubgwin-app/win-counter.html">
+    <link rel="import" href="/src/pubgwin-app/total-counter.html">
+
     <style>body { margin: 0px; }</style>
   </head>
   <body>                     
@@ -33,6 +35,7 @@
 
       <app-router>
         <app-route path="/" import="/src/pubgwin-app/pubgwin-app.html"></app-route>
+        <app-route path="/total/:playerName" import="/src/pubgwin-app/total-counter.html"></app-route>
         <app-route path="/:playerName/:region" import="/src/pubgwin-app/win-counter.html"></app-route>
         <app-route path="*" import="/pages/not-found-page.html"></app-route>
     </app-router>

@@ -4,6 +4,7 @@
   "fragments": [
     "src/pubgwin-app/pubgwin-app.html",
     "src/pubgwin-app/win-counter.html",
+    "src/pubgwin-app/total-counter.html",
     "src/pubgwin-app/utils/google-analytics.html"
   ],
   "sources": [
