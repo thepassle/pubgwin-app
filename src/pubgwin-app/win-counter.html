@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 
-<link href="https://fonts.googleapis.com/css?family=Roboto:700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Teko" rel="stylesheet">
 
 <script src="../../node_modules/axios/dist/axios.min.js"></script>
 
@@ -12,7 +12,7 @@
   <template>
     <style>
     :host {
-      font-family: 'Roboto';
+      font-family: 'Teko';
       --icon-size: 3vw; 
 
       display: block;
@@ -42,14 +42,33 @@
     }
 
     .title h1{
-      margin-left: 25px;
+      line-height: 22vw;
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+
+    .light {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .dark {
+      border-left: solid 4px black;
+      background-color: rgba(0, 0, 0, 0.5);
     }
 
     paper-spinner {
       font-size: 0px;
       width: 9vw;
       height: 9vw;
+      margin: 25px;
       --paper-spinner-stroke-width: 15px;
+    }
+
+    paper-spinner.white {
+      --paper-spinner-layer-1-color:white;
+      --paper-spinner-layer-2-color:white;
+      --paper-spinner-layer-3-color:white;
+      --paper-spinner-layer-4-color:white;
     }
 
     .error {
@@ -73,28 +92,28 @@
       </template>
 
       <template is="dom-if" if=[[loading]]>
-        <paper-spinner active></paper-spinner>
-      </template>
-
-      <template is="dom-if" if=[[!loading]]>
-        <template is="dom-if" if=[[!error.status]]>
-          <h1>
-            WINS
-          </h1>
-        </template>
-      </template>
-
-      <template is="dom-if" if=[[!error.status]]>
-        <h1>:</h1>
+        <h1 class="light" style="font-size: 0px; line-height: 0px;">
+          <paper-spinner class="white" active></paper-spinner>
+        </h1>
       </template>
 
       <template is="dom-if" if=[[!error.status]]>
         <template is="dom-if" if=[[loadingMatch]]>
-          <paper-spinner active></paper-spinner>
+          <h1 class="dark" style="font-size: 0px; line-height: 0px;">
+            <paper-spinner class="white" active></paper-spinner>
+          </h1>
         </template>
 
         <template is="dom-if" if=[[!loadingMatch]]>
-          <h1>[[wins]]</h1>
+          <h1 class="light">[[wins]]</h1>
+        </template>
+      </template>
+
+      <template is="dom-if" if=[[!loading]]>
+        <template is="dom-if" if=[[!error.status]]>
+          <h1 class="dark">
+            WINS
+          </h1>
         </template>
       </template>
 
